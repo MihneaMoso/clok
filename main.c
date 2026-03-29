@@ -5,6 +5,80 @@
 #include <errno.h>
 #include <string.h>
 #include "assert.h"
+#include <stdarg.h>
+
+#if defined(__GNUC__) || defined(__clang__)
+//   https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html
+#    ifdef __MINGW_PRINTF_FORMAT
+#        define PRINTF_FORMAT(STRING_INDEX, FIRST_TO_CHECK) __attribute__ ((format (__MINGW_PRINTF_FORMAT, STRING_INDEX, FIRST_TO_CHECK)))
+#    else
+#        define PRINTF_FORMAT(STRING_INDEX, FIRST_TO_CHECK) __attribute__ ((format (printf, STRING_INDEX, FIRST_TO_CHECK)))
+#    endif // __MINGW_PRINTF_FORMAT
+#else
+//   TODO: implement PRINTF_FORMAT for MSVC
+#    define PRINTF_FORMAT(STRING_INDEX, FIRST_TO_CHECK)
+#endif
+
+#define DA_INIT_CAP 256
+#define da_reserve(da, expected_capacity)                                                  \
+    do {                                                                                   \
+        if ((expected_capacity) > (da)->capacity) {                                        \
+            if ((da)->capacity == 0) {                                                     \
+                (da)->capacity = DA_INIT_CAP;                                              \
+            }                                                                              \
+            while ((expected_capacity) > (da)->capacity) {                                 \
+                (da)->capacity *= 2;                                                       \
+            }                                                                              \
+            (da)->items = realloc((da)->items, (da)->capacity * sizeof(*(da)->items));     \
+            assert((da)->items != NULL && "Buy more RAM lol");                             \
+        }                                                                                  \
+    } while (0)
+
+#define da_append(da, item)                  \
+    do {                                     \
+        da_reserve((da), (da)->count + 1);   \
+        (da)->items[(da)->count++] = (item); \
+    } while (0)
+
+#define da_delete_at(da, i) \
+    do { \
+       size_t index = (i); \
+       assert(index < (da)->count); \
+       memmove(&(da)->items[index], &(da)->items[index + 1], ((da)->count - index - 1)*sizeof(*(da)->items)); \
+       (da)->count -= 1; \
+    } while(0)
+
+#define sb_append_null(sb) da_append(sb, 0)
+
+
+typedef struct {
+    char *items;
+    size_t count;
+    size_t capacity;
+} String_Builder;
+
+int sb_appendf(String_Builder *sb, const char *fmt, ...) PRINTF_FORMAT(2, 3);
+int sb_appendf(String_Builder *sb, const char *fmt, ...)
+{
+    va_list args;
+
+    va_start(args, fmt);
+    int n = vsnprintf(NULL, 0, fmt, args);
+    va_end(args);
+
+    // NOTE: the new_capacity needs to be +1 because of the null terminator.
+    // However, further below we increase sb->count by n, not n + 1.
+    // This is because we don't want the sb to include the null terminator. The user can always sb_append_null() if they want it
+    da_reserve(sb, sb->count + n + 1);
+    char *dest = sb->items + sb->count;
+    va_start(args, fmt);
+    vsnprintf(dest, n+1, fmt, args);
+    va_end(args);
+
+    sb->count += n;
+
+    return n;
+}
 
 void print_usage(char* program) {
     printf("Usage: %s [DIRECTORY]\nCount the lines of code in a directory\n", program);
@@ -47,7 +121,44 @@ fail:
     return false;
 }
 
-void walk_dir(char* root, int (*walker_fn) (char* path)) {
+int print_thing(const char* path) {
+    printf(" -- The directory is %s\n", path);
+    return 0;
+}
+
+void walk_dir(DIR* dirp, int (*walker_fn) (const char* path)) {
+    struct dirent* root;
+    
+    while ((root = readdir(dirp)) != NULL) {
+        switch (root->d_type) {
+            case DT_REG: {
+                printf("%s is a regular file.\n", root->d_name);
+                walker_fn(root->d_name);
+                break;
+            }
+            case DT_DIR: {
+                char* name = root->d_name;
+                if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+                    continue;
+                }
+                DIR* newdir = opendir(name);
+                if (newdir != NULL) {
+                    walker_fn(name);
+
+                    walk_dir(newdir, walker_fn);
+                }
+                break;
+            }
+            case DT_BLK:
+            case DT_CHR:
+            case DT_FIFO:
+            case DT_LNK:
+            case DT_SOCK:
+            case DT_UNKNOWN:
+                break;
+    }
+    }
+    
     
 }
 
@@ -68,13 +179,12 @@ int main(int argc, char** argv) {
     
     // printf("dir = %s\n", dir);
     DIR* dirp = opendir(dir);
-    // printf("dirp = %p\n", dirp);
     
-    
-    struct dirent *dir_entity;
-    while ((dir_entity = readdir(dirp)) != NULL) {
-        printf("name = %s, type = %c\n", dir_entity->d_name, dir_entity->d_type);
-    }
+    // struct dirent *dir_entity;
+    // while ((dir_entity = readdir(dirp)) != NULL) {
+    //     printf("name = %s, type = %c\n", dir_entity->d_name, dir_entity->d_type);
+    // }
+    walk_dir(dirp, print_thing);
     
     int ret = closedir(dirp);
     if (ret != 0) {
