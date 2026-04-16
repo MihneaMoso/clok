@@ -1,5 +1,13 @@
 CC = gcc
-CFLAGS = -O2 -march=native -Wall -Wextra
+CFLAGS = -Wall -Wextra
+LDFLAGS = 
+DEBUG_FLAGS = -ggdb
+RELEASE_FLAGS = -O2 -march=native
 
-cloc: main.c
-	$(CC) $(CFLAGS) -o cloc main.c
+.DEFAULT_GOAL := debug
+
+debug: main.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(DEBUG_FLAGS) -o clok main.c
+
+release: main.c
+	$(CC) $(CFLAGS) $(LDFLAGS) $(RELEASE_FLAGS) -o clok main.c

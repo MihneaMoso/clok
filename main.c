@@ -11,23 +11,37 @@
 #include "sb.h"
 #include "util.h"
 
+#ifdef _WIN32
+    #define PATH_SEP "\\"
+#else
+    #define PATH_SEP "/"
+#endif
+
+// #define PATH_MAX 256
+
 void print_usage(char* program) {
     printf("Usage: %s [DIRECTORY]\nCount the lines of code in a directory\n", program);
 }
 
 int print_thing(const char* path) {
-    printf(" -- The directory is %s\n", path);
+    printf(" -- The file is %s\n", path);
     return 0;
 }
 
-void walk_dir(DIR* dirp, int (*walker_fn) (const char* path)) {
+void walk_dir(const char* dirpath, int (*walker_fn) (const char* path)) {
+    DIR* dirp = opendir(dirpath);
+    if (dirp == NULL) return;
+
     struct dirent* root;
     
     while ((root = readdir(dirp)) != NULL) {
+        char fullpath[PATH_MAX];
+        snprintf(fullpath, sizeof(fullpath), "%s"PATH_SEP"%s", dirpath, root->d_name);
+
         switch (root->d_type) {
             case DT_REG: {
-                printf("%s is a regular file.\n", root->d_name);
-                walker_fn(root->d_name);
+                // printf("%s is a regular file.\n", root->d_name);
+                walker_fn(fullpath);
                 break;
             }
             case DT_DIR: {
@@ -35,12 +49,11 @@ void walk_dir(DIR* dirp, int (*walker_fn) (const char* path)) {
                 if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
                     continue;
                 }
-                DIR* newdir = opendir(name);
-                if (newdir != NULL) {
-                    walker_fn(name);
+                // walker_fn(name);
+                // printf("Going to %s\n", name);
 
-                    walk_dir(newdir, walker_fn);
-                }
+                walk_dir(fullpath, walker_fn);
+                
                 break;
             }
             case DT_BLK:
@@ -50,10 +63,14 @@ void walk_dir(DIR* dirp, int (*walker_fn) (const char* path)) {
             case DT_SOCK:
             case DT_UNKNOWN:
                 break;
-    }
+       }
     }
     
-    
+    int ret = closedir(dirp);
+    if (ret != 0) {
+        char *error = strerror(errno);
+        printf("Closing directory unsuccessful, error: %s\n", error);
+    }
 }
 
 
@@ -71,20 +88,18 @@ int main(int argc, char** argv) {
         exit(1);
     }
     
+    if (strlen(dir) >= 256) {
+        printf("Please provide a directory with maximum %d length.\n", PATH_MAX);
+        return 1;
+    }
     // printf("dir = %s\n", dir);
-    DIR* dirp = opendir(dir);
+    // DIR* dirp = opendir(dir);
     
     // struct dirent *dir_entity;
     // while ((dir_entity = readdir(dirp)) != NULL) {
     //     printf("name = %s, type = %c\n", dir_entity->d_name, dir_entity->d_type);
     // }
-    walk_dir(dirp, print_thing);
-    
-    int ret = closedir(dirp);
-    if (ret != 0) {
-        char *error = strerror(errno);
-        printf("Closing directory unsuccessful, error: %s\n", error);
-    }
+    walk_dir(dir, print_thing);
     
     return 0;
 }
