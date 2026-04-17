@@ -9,7 +9,9 @@
 #include "print.h"
 #include "da.h"
 #include "sb.h"
+#include "sv.h"
 #include "util.h"
+#include "extensions.h"
 
 #ifdef _WIN32
     #define PATH_SEP "\\"
@@ -26,6 +28,21 @@ void print_usage(char* program) {
 int print_thing(const char* path) {
     printf(" -- The file is %s\n", path);
     return 0;
+}
+
+int get_extension(const char* string) {
+    const int ext_len = sizeof(extensions) / sizeof(extensions[0]);
+    
+    String_View s = sv(string);
+    String_View filename = sv_chop_by_delim(&s, '.', true);
+    const char* ext = s.data;
+
+    for (size_t i = 0; i < ext_len; ++i) {
+        if (strcmp(ext, extensions[i]) == 0) {
+            return i;
+        }
+    }
+    return NULL;
 }
 
 void walk_dir(const char* dirpath, int (*walker_fn) (const char* path)) {
