@@ -21,17 +21,32 @@
 
 // #define PATH_MAX 256
 
+const int ext_len = sizeof(extensions) / sizeof(extensions[0]);
+static size_t *extensions_counts = NULL;
+
+void init_extensions_counts() {
+     extensions_counts = (size_t*) malloc(ext_len * sizeof(size_t));
+}
+
 void print_usage(char* program) {
     printf("Usage: %s [DIRECTORY]\nCount the lines of code in a directory\n", program);
 }
 
-int print_thing(const char* path) {
-    printf(" -- The file is %s\n", path);
-    return 0;
+void print_summary() {
+    printf("\nLines of Kode Summary: \n");
+
+    for (size_t i = 0; i < ext_len; ++i) {
+        if (extensions_counts[i] != 0) {
+            printf("Index %zu has %zu lines of code.\n", i, extensions_counts[i]);
+        }
+    }
 }
 
-int get_extension(const char* string) {
-    const int ext_len = sizeof(extensions) / sizeof(extensions[0]);
+void print_thing(const char* path) {
+    printf(" -- The file is %s\n", path);
+}
+
+int get_extension_index(const char* string) {
     
     String_View s = sv(string);
     String_View filename = sv_chop_by_delim(&s, '.', true);
@@ -42,10 +57,43 @@ int get_extension(const char* string) {
             return i;
         }
     }
-    return NULL;
+    return -1;
 }
 
-void walk_dir(const char* dirpath, int (*walker_fn) (const char* path)) {
+void increment_extension_count(const char* ext, size_t count) {
+    int index = get_extension_index(ext);
+    if (index == -1) return;
+    extensions_counts[index] += count;
+}
+
+size_t count_lines(String_View *sv) {
+    size_t count = 0;
+    
+    while (sv->count > 0) {
+        String_View line = sv_chop_by_delim(sv, '\n', false);
+        sv_trim(&line);
+        if (line.count > 0) count += 1; // ignore empty lines
+    }
+    return count;
+}
+
+void read_and_increment(const char* path) {
+
+    String_Builder sb = {0};
+    if (!read_entire_file(path, &sb)) return;
+
+    String_View s = {
+        .data = sb.items,
+        .count = sb.count,
+    };
+    
+    size_t count = count_lines(&s); // number of loc
+    increment_extension_count(path, count);
+
+    free(sb.items);
+}
+
+void walk_dir(const char* dirpath, void (*walker_fn) (const char* path)) {
     DIR* dirp = opendir(dirpath);
     if (dirp == NULL) return;
 
@@ -116,7 +164,12 @@ int main(int argc, char** argv) {
     // while ((dir_entity = readdir(dirp)) != NULL) {
     //     printf("name = %s, type = %c\n", dir_entity->d_name, dir_entity->d_type);
     // }
-    walk_dir(dir, print_thing);
+
+    init_extensions_counts();
+
+    walk_dir(dir, read_and_increment);
+    print_summary();
+    free(extensions_counts);
     
     return 0;
 }

@@ -47,7 +47,7 @@ void sv_trim(String_View *sv) {
     sv_trim_right(sv);
 }
 
-void sv_chop_by_delim(String_View *sv, char delim, bool include_delim) {
+String_View sv_chop_by_delim(String_View *sv, char delim, bool include_delim) {
     int delim_inc = include_delim ? 0 : 1;
     size_t i = 0;
     while (i < sv->count && sv->data[i] != delim) {

@@ -9,7 +9,7 @@ const char* extensions[] = {
     ".cs", ".csx", ".vb", ".vbs", ".vba", ".fs", ".fsx", ".fsi", ".fsscript",
 
     /* ---- Java / JVM ---- */
-    ".java", ".jav", ".kt", ".kts", ".groovy", ".gvy", ".gy", ".gsh", ".scala", ".sc", ".sbt",
+    ".java", ".jav", ".groovy",
 
     /* ---- Clojure ---- */
     ".clj", ".cljs", ".cljc", ".cljr", ".edn",
@@ -32,23 +32,16 @@ const char* extensions[] = {
     /* ---- CoffeeScript / LiveScript ---- */
     ".coffee", ".litcoffee", ".ls",
 
-    /* ---- Web / Markup ---- */
-    ".html", ".htm", ".xhtml", ".shtml", ".xml", ".xsl", ".xslt", ".xsd", ".dtd",
-    ".rss", ".atom", ".wsdl", ".xquery", ".xq", ".xql", ".xqm",
-    ".svg", ".mathml", ".plist",
+    /* ---- Web / Markup ---- */ ".html", ".htm", ".xhtml", ".shtml", ".xml", ".xsl", ".xslt", ".xsd", ".dtd", ".rss", ".atom", ".wsdl", ".xquery", ".xq", ".xql", ".xqm", ".svg", ".mathml", ".plist",
 
     /* ---- CSS / Preprocessors ---- */
     ".css", ".scss", ".sass", ".less", ".styl", ".stylus", ".pcss", ".postcss",
 
     /* ---- Templating / View engines ---- */
-    ".vue", ".svelte", ".astro", ".haml", ".slim", ".pug", ".jade",
-    ".ejs", ".hbs", ".mustache", ".handlebars", ".twig", ".liquid",
-    ".njk", ".jinja", ".jinja2", ".j2", ".eco", ".ect", ".swig",
-    ".erb", ".tmpl", ".template", ".tt", ".tt2",
+    ".vue", ".svelte", ".astro", ".haml", ".slim", ".pug", ".jade", ".ejs", ".hbs", ".mustache", ".handlebars", ".twig", ".liquid", ".njk", ".jinja", ".jinja2", ".j2", ".eco", ".ect", ".swig", ".erb", ".tmpl", ".template", ".tt", ".tt2",
 
     /* ---- Shell / Scripting ---- */
-    ".sh", ".bash", ".zsh", ".fish", ".ksh", ".csh", ".tcsh",
-    ".bat", ".cmd", ".ps1", ".psm1", ".psd1", ".psc1",
+    ".sh", ".bash", ".zsh", ".fish", ".ksh", ".csh", ".tcsh", ".bat", ".cmd", ".ps1", ".psm1", ".psd1", ".psc1",
 
     /* ---- Go ---- */
     ".go", ".mod", ".sum",
@@ -60,7 +53,13 @@ const char* extensions[] = {
     ".swift",
 
     /* ---- Kotlin ---- */
-    /* (already listed above) */
+    ".kt", ".kts",
+
+    /* ---- Groovy ---- */
+    ".gvy", ".gy", ".gsh",
+
+    /* ---- Scala ---- */
+    ".scala", ".sc", ".sbt",
 
     /* ---- Dart ---- */
     ".dart",
@@ -98,8 +97,6 @@ const char* extensions[] = {
     /* ---- Racket / Scheme / Lisp ---- */
     ".rkt", ".rktl", ".scm", ".ss", ".sls", ".sps", ".lisp", ".lsp", ".cl", ".el", ".fnl",
 
-    /* ---- Emacs Lisp ---- */
-    /* (.el already listed) */
 
     /* ---- Hy (Lisp on Python) ---- */
     ".hy",
@@ -171,9 +168,7 @@ const char* extensions[] = {
     ".forth", ".fth", ".4th", ".fs",
 
     /* ---- APL / Dyalog / J / K / Q ---- */
-    ".apl", ".dyalog", ".aplf", ".apln", ".aplo",
-    ".j", ".ijs",
-    ".k", ".q", ".quke",
+    ".apl", ".dyalog", ".aplf", ".apln", ".aplo", ".j", ".ijs", ".k", ".q", ".quke",
 
     /* ---- Io ---- */
     ".io",
@@ -227,38 +222,33 @@ const char* extensions[] = {
     ".fc", ".func", ".tact",
 
     /* ---- Shader languages ---- */
-    ".glsl", ".vert", ".frag", ".geom", ".tesc", ".tese", ".comp",
-    ".hlsl", ".fx", ".fxh", ".wgsl", ".metal", ".spvasm", ".cg",
+    ".glsl", ".vert", ".frag", ".geom", ".tesc", ".tese", ".comp", ".hlsl", ".fx", ".fxh", ".wgsl", ".metal", ".spvasm", ".cg",
 
     /* ---- SQL / Query languages ---- */
-    ".sql", ".mysql", ".pgsql", ".plsql", ".tsql", ".hql", ".bql",
-    ".graphql", ".gql", ".sparql", ".rq", ".cypher", ".cql", ".flux", ".fql",
+    ".sql", ".mysql", ".pgsql", ".plsql", ".tsql", ".hql", ".bql", ".graphql", ".gql", ".sparql", ".rq", ".cypher", ".cql", ".flux", ".fql",
 
     /* ---- Config / Infrastructure ---- */
-    ".tf", ".tfvars", ".hcl", ".nomad", ".pkr.hcl",
-    ".bicep", ".arm",
-    ".nix", ".dhall", ".cue", ".jsonnet", ".libsonnet", ".pkl",
-    ".star", ".starlark", ".bzl", ".bazel", ".BUILD",
-    ".cmake", ".make", ".mk", ".mak", ".ninja", ".gyp", ".gypi",
-    ".dockerfile", ".containerfile",
-    ".vagrantfile", ".gemfile", ".rakefile", ".capfile", ".podfile",
-    ".procfile", ".brewfile",
+    ".tf", ".tfvars", ".hcl", ".nomad", ".pkr.hcl", ".bicep", ".arm", ".nix", ".dhall", ".cue", ".jsonnet", ".libsonnet", ".pkl", ".star", ".starlark", ".bzl", ".bazel", ".BUILD", ".cmake", ".make", ".mk", ".mak", ".ninja", ".gyp", ".gypi", ".dockerfile", ".containerfile", ".vagrantfile", ".gemfile", ".rakefile", ".capfile", ".podfile", ".procfile", ".brewfile",
 
-    /* ---- Data formats (text-based) ---- */
+    /* ---- JSON ---- */
     ".json", ".json5", ".jsonc", ".jsonl", ".ndjson",
+
+    /* ---- YAML ---- */
     ".yaml", ".yml", ".toml", ".ini", ".cfg", ".conf", ".config",
+
+    /* ---- ENV ---- */
     ".env", ".properties", ".props",
+
+    /* ---- CSV ---- */
     ".csv", ".tsv", ".ssv", ".psv", ".dsv",
+
+    /* ---- Log ---- */
     ".log", ".txt",
 
     /* ---- Dotfiles / Editor config ---- */
-    ".editorconfig", ".gitignore", ".gitattributes", ".gitmodules",
-    ".npmrc", ".nvmrc", ".yarnrc", ".babelrc", ".eslintrc",
-    ".prettierrc", ".stylelintrc", ".huskyrc", ".lintstagedrc",
-    ".browserslistrc", ".mocharc", ".jestrc", ".nycrc",
-    ".czrc", ".commitlintrc", ".releaserc",
+    ".editorconfig", ".gitignore", ".gitattributes", ".gitmodules", ".npmrc", ".nvmrc", ".yarnrc", ".babelrc", ".eslintrc", ".prettierrc", ".stylelintrc", ".huskyrc", ".lintstagedrc", ".browserslistrc", ".mocharc", ".jestrc", ".nycrc", ".czrc", ".commitlintrc", ".releaserc",
 
-    /* ---- Text / Documentation ---- */
+    /* ---- Markdown / Documentation ---- */
     ".md", ".markdown", ".mdown", ".mkd", ".mdx",
     ".rst", ".rest",
     ".adoc", ".asciidoc", ".asc",
@@ -267,13 +257,10 @@ const char* extensions[] = {
     ".creole", ".dita", ".docbook",
 
     /* ---- Localization / i18n ---- */
-    ".po", ".pot", ".strings", ".stringsdict",
-    ".resx", ".resw", ".xlf", ".xliff", ".arb",
+    ".po", ".pot", ".strings", ".stringsdict", ".resx", ".resw", ".xlf", ".xliff", ".arb",
 
     /* ---- IDL / Interface ---- */
-    ".idl", ".midl", ".webidl", ".widl",
-    ".proto", ".thrift", ".avsc", ".avdl", ".fbs", ".capnp", ".flatbuffers",
-    ".smithy", ".raml",
+    ".idl", ".midl", ".webidl", ".widl", ".proto", ".thrift", ".avsc", ".avdl", ".fbs", ".capnp", ".flatbuffers", ".smithy", ".raml",
 
     /* ---- Embedded / Device ---- */
     ".dts", ".dtsi", ".ld", ".lds", ".ldi",
@@ -296,8 +283,6 @@ const char* extensions[] = {
     /* ---- Cron / Systemd ---- */
     ".service", ".timer", ".socket", ".mount", ".unit",
 
-    /* ---- Org-mode / Outline ---- */
-    /* (.org already listed) */
 
     /* ---- Notebook formats (text-based) ---- */
     ".ipynb",
@@ -317,12 +302,9 @@ const char* extensions[] = {
     /* ---- VHDL / Verilog (HDL) ---- */
     ".vhd", ".vhdl", ".v", ".sv", ".svh", ".vh",
 
-    /* ---- MATLAB (additional) ---- */
-    /* (.m already listed) */
 
     /* ---- Batch / Make extras ---- */
-    ".msbuild", ".proj", ".props", ".targets", ".nuspec", ".csproj",
-    ".vbproj", ".fsproj", ".vcxproj", ".sln", ".ruleset",
+    ".msbuild", ".proj", ".props", ".targets", ".nuspec", ".csproj", ".vbproj", ".fsproj", ".vcxproj", ".sln", ".ruleset",
 
     /* ---- OpenAPI / Swagger ---- */
     ".oas", ".swagger",
@@ -354,7 +336,6 @@ const char* extensions[] = {
     /* ---- Grace ---- */
     ".grace",
 
-    /* ---- Fennel (already listed as .fnl) ---- */
 
     /* ---- Janet ---- */
     ".janet", ".jdn",
@@ -434,7 +415,6 @@ const char* extensions[] = {
     /* ---- Gosu ---- */
     ".gs", ".gsx", ".gsp", ".gst",
 
-    /* ---- SPARQL (already listed) ---- */
 
     /* ---- Turtle / N-Triples / RDF ---- */
     ".ttl", ".n3", ".nt", ".nq", ".trig", ".jsonld",
@@ -478,18 +458,12 @@ const char* extensions[] = {
     /* ---- YANG (network config modeling) ---- */
     ".yang",
 
-    /* ---- Gherkin (Cucumber) ---- */
-    /* (.feature already listed) */
 
     /* ---- Stan (statistical modeling) ---- */
     ".stan",
 
     /* ---- BUGS / JAGS ---- */
     ".bug", ".jag",
-
-    /* ---- Sass map (already .scss/.sass listed) ---- */
-
-    /* ---- Cython (already .pyx listed) ---- */
 
     /* ---- SWIG ---- */
     ".i", ".swg",
@@ -518,12 +492,6 @@ const char* extensions[] = {
     /* ---- Pig Latin ---- */
     ".pig",
 
-    /* ---- Hive ---- */
-    /* (.hql already listed) */
-
-    /* ---- Impala ---- */
-    /* (uses .sql) */
-
     /* ---- AMPL ---- */
     ".mod", ".dat", ".run",
 
@@ -541,10 +509,6 @@ const char* extensions[] = {
 
     /* ---- GCode ---- */
     ".gcode", ".gco", ".nc", ".ngc",
-
-    /* ---- Textile / Creole (already listed) ---- */
-
-    /* ---- AsciiDoc (already listed) ---- */
 
     NULL  /* sentinel */
 };
